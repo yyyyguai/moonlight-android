@@ -164,4 +164,26 @@
         <item>4</item>
     </string-array>
 
+
+    <string-array name="screen_gravity_list_names">
+        <item>默认居中</item>
+        <item>顶部居中</item>
+        <item>顶部居左</item>
+        <item>顶部居右</item>
+        <item>底部居中</item>
+        <item>底部居左</item>
+        <item>底部居右</item>
+    </string-array>
+
+    <string-array name="screen_gravity_list_values" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+    </string-array>
+
+
 </resources>

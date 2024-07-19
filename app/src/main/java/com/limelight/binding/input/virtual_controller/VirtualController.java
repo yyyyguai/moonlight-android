@@ -237,7 +237,10 @@ public class VirtualController {
 
         sendControllerInputContextInternal();
         if (PreferenceConfiguration.readPreferences(context).enableKeyboardVibrate && vibrator.hasVibrator()) {
-            vibrator.vibrate(10);
+            //摇杆不震动
+            if(inputContext.inputMap!=0||inputContext.leftTrigger!=0x00||inputContext.rightTrigger!=0x00) {
+                vibrator.vibrate(10);
+            }
         }
         // HACK: GFE sometimes discards gamepad packets when they are received
         // very shortly after another. This can be critical if an axis zeroing packet

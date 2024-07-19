@@ -174,9 +174,6 @@ public class PreferenceConfiguration {
 
     public boolean enableExDisplay;
 
-    //串流画面顶部居中显示
-    public boolean enableDisplayTopCenter;
-
     //触控屏幕灵敏度
     public int touchSensitivityX;
     public int touchSensitivityY;
@@ -216,6 +213,9 @@ public class PreferenceConfiguration {
     //自由摇杆背景透明度
     public int senableNewAnalogStickOpacity;
 
+    //自由摇杆固定键程
+    public boolean senableNewAnalogStickOpacityFixed;
+
     //VR模式
     public boolean enableSbs;
     public boolean bindAllUsb;
@@ -236,6 +236,12 @@ public class PreferenceConfiguration {
     public boolean gamepadMotionSensors;
     public boolean gamepadTouchpadAsMouse;
     public boolean gamepadMotionSensorsFallbackToDevice;
+
+    //开启虚拟手柄的陀螺仪功能
+    public boolean enableVirtualControllerMotion;
+
+    //填充刘海区域
+    public boolean enableCutoutModeVideo;
 
     public static boolean isNativeResolution(int width, int height) {
         // It's not a native resolution if it matches an existing resolution option
@@ -698,8 +704,6 @@ public class PreferenceConfiguration {
 
         config.enableExDisplay=prefs.getBoolean("checkbox_enable_exdisplay",false);
 
-        config.enableDisplayTopCenter=prefs.getBoolean("checkbox_enable_view_top_center",false);
-
         config.touchSensitivityX =prefs.getInt(TOUCH_SENSITIVITY,100);
 
         config.touchSensitivityY=prefs.getInt("seekbar_touch_sensitivity_opacity_y",100);
@@ -723,6 +727,12 @@ public class PreferenceConfiguration {
         config.touchPadSensitivity=prefs.getInt("seekbar_touchpad_sensitivity_opacity",100);
 
         config.touchPadYSensitity=prefs.getInt("seekbar_touchpad_sensitivity_y_opacity",100);
+
+        config.senableNewAnalogStickOpacityFixed=prefs.getBoolean("checkbox_enable_analog_stick_new_fixed",false);
+
+        config.enableVirtualControllerMotion=prefs.getBoolean("checkbox_enable_virtual_motion",false);
+
+        config.enableCutoutModeVideo=prefs.getBoolean("checkbox_cutout_mode_video",false);
 
         config.absoluteMouseMode = prefs.getBoolean(ABSOLUTE_MOUSE_MODE_PREF_STRING, DEFAULT_ABSOLUTE_MOUSE_MODE);
         config.enableAudioFx = prefs.getBoolean(ENABLE_AUDIO_FX_PREF_STRING, DEFAULT_ENABLE_AUDIO_FX);

@@ -250,7 +250,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         // Enter landscape unless we're on a square screen
         setPreferredOrientationForCurrentDisplay();
 
-        if (prefConfig.stretchVideo || shouldIgnoreInsetsForResolution(prefConfig.width, prefConfig.height)) {
+        if (prefConfig.stretchVideo || prefConfig.enableCutoutModeVideo || shouldIgnoreInsetsForResolution(prefConfig.width, prefConfig.height)) {
             // Allow the activity to layout under notches if the fill-screen option
             // was turned on by the user or it's a full-screen native resolution
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -271,11 +271,35 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         //光标是否显示
         cursorVisible=prefConfig.enableMouseLocalCursor;
 
+//        //串流画面 顶部居中显示
+//        if(prefConfig.enableDisplayTopCenter){
+//            FrameLayout.LayoutParams params= (FrameLayout.LayoutParams) streamView.getLayoutParams();
+//            params.gravity= Gravity.CENTER_HORIZONTAL|Gravity.TOP;
+//        }
         //串流画面 顶部居中显示
-        if(prefConfig.enableDisplayTopCenter){
-            FrameLayout.LayoutParams params= (FrameLayout.LayoutParams) streamView.getLayoutParams();
-            params.gravity= Gravity.CENTER_HORIZONTAL|Gravity.TOP;
+        FrameLayout.LayoutParams params= (FrameLayout.LayoutParams) streamView.getLayoutParams();
+        int gravityModel=Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this).getString("screen_gravity_list", "0"));
+        switch (gravityModel){
+            case 1://顶部居中
+                params.gravity= Gravity.CENTER_HORIZONTAL|Gravity.TOP;
+                break;
+            case 2://顶部居左
+                params.gravity= Gravity.LEFT|Gravity.TOP;
+                break;
+            case 3://顶部居右
+                params.gravity= Gravity.RIGHT|Gravity.TOP;
+                break;
+            case 4://底部居中
+                params.gravity= Gravity.CENTER_HORIZONTAL|Gravity.BOTTOM;
+                break;
+            case 5://底部居左
+                params.gravity= Gravity.LEFT|Gravity.BOTTOM;
+                break;
+            case 6://底部居右
+                params.gravity= Gravity.RIGHT|Gravity.BOTTOM;
+                break;
         }
+
         // Listen for touch events on the background touch view to enable trackpad mode
         // to work on areas outside of the StreamView itself. We use a separate View
         // for this rather than just handling it at the Activity level, because that

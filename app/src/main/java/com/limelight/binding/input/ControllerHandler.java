@@ -2289,6 +2289,11 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
         // Report rate is restricted to <= 200 Hz without the HIGH_SAMPLING_RATE_SENSORS permission
         reportRateHz = (short) Math.min(200, reportRateHz);
 
+        //开启虚拟手柄陀螺仪功能
+        if(prefConfig.enableVirtualControllerMotion){
+            enableVirtualControllerMotionType(controllerNumber,motionType,reportRateHz);
+        }
+
         for (int i = 0; i < inputDeviceContexts.size(); i++) {
             InputDeviceContext deviceContext = inputDeviceContexts.valueAt(i);
 
@@ -3333,6 +3338,57 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
         public void sendControllerArrival() {
             conn.sendControllerArrivalEvent((byte)controllerNumber, getActiveControllerMask(),
                     device.getType(), device.getSupportedButtonFlags(), device.getCapabilities());
+        }
+    }
+
+
+    //开启虚拟控制器陀螺仪功能
+    private void enableVirtualControllerMotionType(short controllerNumber,byte motionType,short reportRateHz){
+
+        if(defaultContext.sensorManager==null){
+            defaultContext.sensorManager=deviceSensorManager;
+        }
+
+        switch (motionType) {
+            case MoonBridge.LI_MOTION_TYPE_ACCEL:
+                defaultContext.accelReportRateHz = reportRateHz;
+                break;
+            case MoonBridge.LI_MOTION_TYPE_GYRO:
+                defaultContext.gyroReportRateHz = reportRateHz;
+                break;
+        }
+
+        backgroundThreadHandler.removeCallbacks(defaultContext.enableSensorRunnable);
+
+        SensorManager sm = defaultContext.sensorManager;
+
+        switch (motionType) {
+            case MoonBridge.LI_MOTION_TYPE_ACCEL:
+                if (defaultContext.accelListener != null) {
+                    sm.unregisterListener(defaultContext.accelListener);
+                    defaultContext.accelListener = null;
+                }
+
+                // Enable the accelerometer if requested
+                Sensor accelSensor = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+                if (reportRateHz != 0 && accelSensor != null) {
+                    defaultContext.accelListener = createSensorListener(controllerNumber, motionType, sm == deviceSensorManager);
+                    sm.registerListener(defaultContext.accelListener, accelSensor, 1000000 / reportRateHz);
+                }
+                break;
+            case MoonBridge.LI_MOTION_TYPE_GYRO:
+                if (defaultContext.gyroListener != null) {
+                    sm.unregisterListener(defaultContext.gyroListener);
+                    defaultContext.gyroListener = null;
+                }
+
+                // Enable the gyroscope if requested
+                Sensor gyroSensor = sm.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+                if (reportRateHz != 0 && gyroSensor != null) {
+                    defaultContext.gyroListener = createSensorListener(controllerNumber, motionType, sm == deviceSensorManager);
+                    sm.registerListener(defaultContext.gyroListener, gyroSensor, 1000000 / reportRateHz);
+                }
+                break;
         }
     }
 }

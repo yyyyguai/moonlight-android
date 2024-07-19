@@ -321,6 +321,7 @@
     <string name="game_menu_send_keys_ctrl_v">Send Ctrl + V (粘贴剪切板)</string>
     <string name="game_menu_send_keys_win">Send Win (打开Windows开始菜单)</string>
     <string name="game_menu_send_keys_win_d">Send Win + D (返回桌面)</string>
+    <string name="game_menu_send_keys_win_p">Send Win + P (显示器模式)</string>
     <string name="game_menu_send_keys_alt_b">Send ALT + B (切换HDR)</string>
     <string name="game_menu_send_keys_win_x_u_s">Send Win + X ~ U + S (睡眠)</string>
     <string name="game_menu_send_keys_win_x_u_r">Send Win + X ~ U + R (重启)</string>

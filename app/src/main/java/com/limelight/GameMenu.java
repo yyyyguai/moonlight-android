@@ -185,6 +185,9 @@ public class GameMenu {
             options.add(new MenuOption(getString(R.string.game_menu_send_keys_win_d),
                     () -> sendKeys(new short[]{KeyboardTranslator.VK_LWIN, KeyboardTranslator.VK_D})));
 
+            options.add(new MenuOption(getString(R.string.game_menu_send_keys_win_p),
+                    () -> sendKeys(new short[]{KeyboardTranslator.VK_LWIN, KeyboardTranslator.VK_P})));
+
             options.add(new MenuOption(getString(R.string.game_menu_send_keys_win_g),
                     () -> sendKeys(new short[]{KeyboardTranslator.VK_LWIN, KeyboardTranslator.VK_G})));
 

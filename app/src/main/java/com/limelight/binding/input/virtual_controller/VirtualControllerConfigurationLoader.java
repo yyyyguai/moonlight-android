@@ -160,16 +160,28 @@ public class VirtualControllerConfigurationLoader {
         return new RightAnalogStick(controller, context);
     }
 
-    private static AnalogStickFree createLeftStick2(
+    private static AnalogStickFree createLeftStickFree(
             final VirtualController controller,
             final Context context) {
         return new LeftAnalogStickFree(controller, context);
     }
 
-    private static AnalogStickFree createRightStick2(
+    private static AnalogStickFree createRightStickFree(
             final VirtualController controller,
             final Context context) {
         return new RightAnalogStickFree(controller, context);
+    }
+
+    private static AnalogStickFree2 createLeftStickFree2(
+            final VirtualController controller,
+            final Context context) {
+        return new LeftAnalogStickFree2(controller, context);
+    }
+
+    private static AnalogStickFree2 createRightStickFree2(
+            final VirtualController controller,
+            final Context context) {
+        return new RightAnalogStickFree2(controller, context);
     }
 
 
@@ -298,21 +310,39 @@ public class VirtualControllerConfigurationLoader {
                     screenScale(TRIGGER_WIDTH, height),
                     screenScale(TRIGGER_HEIGHT, height)
             );
-
+            //自由摇杆
             if(config.enableNewAnalogStick){
-                controller.addElement(createLeftStick2(controller, context),
-                        screenScale(ANALOG_L_BASE_X, height),
-                        screenScale(ANALOG_L_BASE_Y, height),
-                        screenScale(ANALOG_SIZE, height),
-                        screenScale(ANALOG_SIZE, height)
-                );
+                //固定键程
+                if(config.senableNewAnalogStickOpacityFixed){
+                    controller.addElement(createLeftStickFree2(controller, context),
+                            screenScale(ANALOG_L_BASE_X, height),
+                            screenScale(ANALOG_L_BASE_Y, height),
+                            screenScale(ANALOG_SIZE, height),
+                            screenScale(ANALOG_SIZE, height)
+                    );
 
-                controller.addElement(createRightStick2(controller, context),
-                        screenScale(ANALOG_R_BASE_X, height) + rightDisplacement,
-                        screenScale(ANALOG_R_BASE_Y, height),
-                        screenScale(ANALOG_SIZE, height),
-                        screenScale(ANALOG_SIZE, height)
-                );
+                    controller.addElement(createRightStickFree2(controller, context),
+                            screenScale(ANALOG_R_BASE_X, height) + rightDisplacement,
+                            screenScale(ANALOG_R_BASE_Y, height),
+                            screenScale(ANALOG_SIZE, height),
+                            screenScale(ANALOG_SIZE, height)
+                    );
+                }else{
+                    controller.addElement(createLeftStickFree(controller, context),
+                            screenScale(ANALOG_L_BASE_X, height),
+                            screenScale(ANALOG_L_BASE_Y, height),
+                            screenScale(ANALOG_SIZE, height),
+                            screenScale(ANALOG_SIZE, height)
+                    );
+
+                    controller.addElement(createRightStickFree(controller, context),
+                            screenScale(ANALOG_R_BASE_X, height) + rightDisplacement,
+                            screenScale(ANALOG_R_BASE_Y, height),
+                            screenScale(ANALOG_SIZE, height),
+                            screenScale(ANALOG_SIZE, height)
+                    );
+                }
+
             }else{
                 controller.addElement(createLeftStick(controller, context),
                         screenScale(ANALOG_L_BASE_X, height),

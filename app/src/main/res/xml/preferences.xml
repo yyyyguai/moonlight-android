@@ -50,6 +50,12 @@
             android:key="checkbox_stretch_video"
             android:title="@string/title_checkbox_stretch_video"
             android:defaultValue="false" />
+
+        <CheckBoxPreference
+            android:key="checkbox_cutout_mode_video"
+            android:title="填充刘海区域"
+            android:defaultValue="false" />
+
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/category_audio_settings">
         <ListPreference
@@ -396,16 +402,25 @@
             android:title="自由摇杆背景透明度" />
 
         <CheckBoxPreference
+            android:key="checkbox_enable_analog_stick_new_fixed"
+            android:title="自由摇杆键程固定"
+            android:dependency="checkbox_enable_analog_stick_new"
+            android:summary="固定摇杆推到底，虚拟手柄 左右摇杆中心点位置不固定，可自由调整在一定区域内移动。"
+            android:defaultValue="false"/>
+
+        <CheckBoxPreference
             android:key="checkbox_enable_exdisplay"
             android:title="外接显示器模式（Beta）"
             android:summary="串流画面显示在显示器，虚拟按键及性能信息等控件在手机屏幕。"
             android:defaultValue="false"/>
 
-        <CheckBoxPreference
-            android:key="checkbox_enable_view_top_center"
-            android:title="画面顶部居中显示"
-            android:summary="可能对折叠屏手机有点帮助，设置分辨率为上半屏幕分辨率，勾选此选项，则画面在上半屏幕显示而非居中显示。"
-            android:defaultValue="false"/>
+        <ListPreference
+            android:key="screen_gravity_list"
+            android:title="画面显示位置（默认居中）"
+            android:summary="可能对折叠屏手机或者平板有点帮助,请自行DIY分辨率和画面位置。"
+            android:entries="@array/screen_gravity_list_names"
+            android:entryValues="@array/screen_gravity_list_values"
+            android:defaultValue="0" />
 
 
         <CheckBoxPreference
@@ -482,6 +497,12 @@
             android:key="checkbox_enable_device_rumble"
             android:title="强制使用设备本身的震动马达"
             android:summary="你如果对连接的手柄本身震动效果不满意，可以开启此选项！【对强制使用月光自带USB驱动无效】"
+            android:defaultValue="false"/>
+
+        <CheckBoxPreference
+            android:key="checkbox_enable_virtual_motion"
+            android:title="虚拟手柄使用设备本身的陀螺仪"
+            android:summary="如果你希望虚拟手柄支持陀螺仪功能，开启此选项。\n可能需要在sunshine后台设置手柄强制为ps4手柄。\n建议连接物理手柄时关闭此选项。"
             android:defaultValue="false"/>
 
         <CheckBoxPreference
