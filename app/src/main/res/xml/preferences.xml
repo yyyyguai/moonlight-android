@@ -465,8 +465,6 @@
             android:text="%"
             android:title="屏幕灵敏度调整Y轴" />
 
-        checkbox_enable_touch_sensitivity_rotation_auto
-
         <Preference
             android:key="pref_axi_test"
             android:title="阿西西调试页面"
@@ -515,6 +513,18 @@
             android:key="import_special_button_file"
             android:title="导入自定义特殊指令配置文件"
             android:summary="每次都会覆盖原来的，请注意备份。"
+            />
+
+        <Preference
+            android:key="export_computers_data_file"
+            android:title="导出配对的电脑数据库文件"
+            android:summary="导出一个db格式的sqlite数据库文件"
+            />
+
+        <Preference
+            android:key="import_computers_data_file"
+            android:title="导入配对的电脑数据库文件"
+            android:summary="选择db数据库文件，会覆盖更新原有的电脑列表，需要重新打开APP生效。"
             />
 
         <com.limelight.preferences.WebLauncherPreference

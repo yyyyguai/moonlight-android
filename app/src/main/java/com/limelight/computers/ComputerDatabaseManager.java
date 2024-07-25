@@ -1,6 +1,7 @@
 package com.limelight.computers;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -23,7 +24,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class ComputerDatabaseManager {
-    private static final String COMPUTER_DB_NAME = "computers4.db";
+    public static final String COMPUTER_DB_NAME = "computers4.db";
     private static final String COMPUTER_TABLE_NAME = "Computers";
     private static final String COMPUTER_UUID_COLUMN_NAME = "UUID";
     private static final String COMPUTER_NAME_COLUMN_NAME = "ComputerName";
@@ -54,6 +55,12 @@ public class ComputerDatabaseManager {
         }
         initializeDb(c);
     }
+
+    public ComputerDatabaseManager(Context context, File file){
+        computerDb=SQLiteDatabase.openDatabase(file.getPath(),
+                null, SQLiteDatabase.OPEN_READONLY);
+    }
+
 
     public void close() {
         computerDb.close();

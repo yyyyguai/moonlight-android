@@ -23,9 +23,7 @@ import android.preference.PreferenceScreen;
 import android.support.v4.content.FileProvider;
 import android.text.InputFilter;
 import android.text.InputType;
-import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.method.NumberKeyListener;
 import android.util.DisplayMetrics;
 import android.util.Range;
 import android.view.Display;
@@ -45,14 +43,16 @@ import com.limelight.PcView;
 import com.limelight.R;
 import com.limelight.binding.input.virtual_controller.keyboard.KeyBoardControllerConfigurationLoader;
 import com.limelight.binding.video.MediaCodecHelper;
+import com.limelight.computers.ComputerDatabaseManager;
+import com.limelight.nvstream.http.ComputerDetails;
 import com.limelight.utils.Dialog;
 import com.limelight.utils.FileUriUtils;
 import com.limelight.utils.UiHelper;
 import org.json.JSONObject;
 import java.io.File;
-import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class StreamSettings extends Activity {
@@ -709,6 +709,18 @@ public class StreamSettings extends Activity {
                     return false;
                 }
             });
+
+            findPreference("import_computers_data_file").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType("*/*");
+                    startActivityForResult(intent, READ_DATABASE_REQUEST_CODE);
+                    return false;
+                }
+            });
+
             findPreference("import_special_button_file").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
@@ -741,6 +753,25 @@ public class StreamSettings extends Activity {
                     intent.putExtra(Intent.EXTRA_STREAM, uri);
                     intent.setType("text/plain");
                     startActivity(Intent.createChooser(intent,"保存配置文件"));
+                    return false;
+                }
+            });
+
+            findPreference("export_computers_data_file").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    File dataFile=new File(getActivity().getDatabasePath(ComputerDatabaseManager.COMPUTER_DB_NAME).getPath());
+                    if(!dataFile.exists()){
+                        return false;
+                    }
+                    Uri uri;
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    String authority= BuildConfig.APPLICATION_ID+".fileprovider";
+                    uri= FileProvider.getUriForFile(getActivity(),authority,dataFile);
+                    intent.putExtra(Intent.EXTRA_STREAM, uri);
+                    intent.setType("*/*");
+                    startActivity(Intent.createChooser(intent,"保存数据文件"));
                     return false;
                 }
             });
@@ -807,6 +838,9 @@ public class StreamSettings extends Activity {
         }
         int READ_REQUEST_CODE=1001;
         int READ_REQUEST_SPECIAL_CODE=1002;
+
+        int READ_DATABASE_REQUEST_CODE=1003;
+
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
             super.onActivityResult(requestCode, resultCode, data);
@@ -853,6 +887,32 @@ public class StreamSettings extends Activity {
                     e.printStackTrace();
                     Toast.makeText(getActivity(),"出错啦~"+e.getMessage(),Toast.LENGTH_SHORT).show();
                 }
+                return;
+            }
+
+            if (requestCode == READ_DATABASE_REQUEST_CODE && resultCode == Activity.RESULT_OK &&data.getData()!=null) {
+                try {
+                    Uri uri = data.getData();
+                    File dataBaseFile= null;
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                        dataBaseFile = FileUriUtils.uriToFileApiQ(uri,getActivity());
+                    }else{
+                        String displayName = System.currentTimeMillis() + Math.round((Math.random() + 1) * 1000)+".db";
+                        dataBaseFile=new File(getActivity().getCacheDir().getAbsolutePath(), displayName);
+                        FileUriUtils.copyUriToInternalStorage(getActivity(),uri,dataBaseFile);
+                    }
+                    ComputerDatabaseManager importManager=new ComputerDatabaseManager(getActivity(),dataBaseFile);
+                    List<ComputerDetails> importComputers=importManager.getAllComputers();
+                    ComputerDatabaseManager manager=new ComputerDatabaseManager(getActivity());
+                    for (ComputerDetails computer : importComputers) {
+                        manager.updateComputer(computer);
+                    }
+                    Toast.makeText(getActivity(),"导入成功,重新打开APP生效！",Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(getActivity(),"出错啦~"+e.getMessage(),Toast.LENGTH_SHORT).show();
+                }
+                return;
             }
         }
 

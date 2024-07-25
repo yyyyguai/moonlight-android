@@ -1,8 +1,12 @@
 package com.limelight.utils;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
-
+import android.os.Build;
+import android.os.FileUtils;
+import android.support.annotation.RequiresApi;
+import android.webkit.MimeTypeMap;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -99,4 +103,66 @@ public class FileUriUtils {
         }
         return true;
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    public static File uriToFileApiQ(Uri uri, Context context) {
+        File file = null;
+        if (uri == null) return file;
+        //android10以上转换
+        if (uri.getScheme().equals(ContentResolver.SCHEME_FILE)) {
+            file = new File(uri.getPath());
+        } else if (uri.getScheme().equals(ContentResolver.SCHEME_CONTENT)) {
+            //把文件复制到沙盒目录
+            ContentResolver contentResolver = context.getContentResolver();
+            String displayName = System.currentTimeMillis() + Math.round((Math.random() + 1) * 1000)
+                    + "." + MimeTypeMap.getSingleton().getExtensionFromMimeType(contentResolver.getType(uri));
+            try {
+                InputStream is = contentResolver.openInputStream(uri);
+                File cache = new File(context.getCacheDir().getAbsolutePath(), displayName);
+                FileOutputStream fos = new FileOutputStream(cache);
+                FileUtils.copy(is, fos);
+                file = cache;
+                fos.close();
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return file;
+    }
+
+    public static void copyUriToInternalStorage(Context context, Uri uri, File destFile) {
+        InputStream inputStream = null;
+        OutputStream outputStream = null;
+        try {
+            // 从Uri获取输入流
+            inputStream = context.getContentResolver().openInputStream(uri);
+            if (inputStream == null) {
+                return;
+            }
+
+            // 创建目标文件
+            outputStream = new FileOutputStream(destFile);
+
+            // 缓冲区大小
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
+            }
+
+            outputStream.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // 关闭输入流和输出流
+            try {
+                if (inputStream != null) inputStream.close();
+                if (outputStream != null) outputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }
