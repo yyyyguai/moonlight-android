@@ -721,6 +721,28 @@ public class StreamSettings extends Activity {
                 }
             });
 
+            findPreference("import_https_data_crt_file").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType("*/*");
+                    startActivityForResult(intent, READ_DATA_CRT_REQUEST_CODE);
+                    return false;
+                }
+            });
+
+            findPreference("import_https_data_key_file").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType("*/*");
+                    startActivityForResult(intent, READ_DATA_KEY_REQUEST_CODE);
+                    return false;
+                }
+            });
+
             findPreference("import_special_button_file").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
@@ -761,6 +783,44 @@ public class StreamSettings extends Activity {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
                     File dataFile=new File(getActivity().getDatabasePath(ComputerDatabaseManager.COMPUTER_DB_NAME).getPath());
+                    if(!dataFile.exists()){
+                        return false;
+                    }
+                    Uri uri;
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    String authority= BuildConfig.APPLICATION_ID+".fileprovider";
+                    uri= FileProvider.getUriForFile(getActivity(),authority,dataFile);
+                    intent.putExtra(Intent.EXTRA_STREAM, uri);
+                    intent.setType("*/*");
+                    startActivity(Intent.createChooser(intent,"保存数据文件"));
+                    return false;
+                }
+            });
+
+            findPreference("export_https_data_crt_file").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    File dataFile=new File(getActivity().getFilesDir().getAbsolutePath()+ File.separator + "client.crt");
+                    if(!dataFile.exists()){
+                        return false;
+                    }
+                    Uri uri;
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    String authority= BuildConfig.APPLICATION_ID+".fileprovider";
+                    uri= FileProvider.getUriForFile(getActivity(),authority,dataFile);
+                    intent.putExtra(Intent.EXTRA_STREAM, uri);
+                    intent.setType("*/*");
+                    startActivity(Intent.createChooser(intent,"保存数据文件"));
+                    return false;
+                }
+            });
+
+            findPreference("export_https_data_key_file").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    File dataFile=new File(getActivity().getFilesDir().getAbsolutePath()+ File.separator + "client.key");
                     if(!dataFile.exists()){
                         return false;
                     }
@@ -841,6 +901,10 @@ public class StreamSettings extends Activity {
 
         int READ_DATABASE_REQUEST_CODE=1003;
 
+        int READ_DATA_CRT_REQUEST_CODE=1004;
+
+        int READ_DATA_KEY_REQUEST_CODE=1005;
+
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
             super.onActivityResult(requestCode, resultCode, data);
@@ -914,6 +978,39 @@ public class StreamSettings extends Activity {
                 }
                 return;
             }
+
+            if (requestCode == READ_DATA_CRT_REQUEST_CODE && resultCode == Activity.RESULT_OK &&data.getData()!=null) {
+                try {
+                    Uri uri = data.getData();
+                    File dataBaseFile= null;
+                    String displayName = "client.crt";
+                    dataBaseFile=new File(getActivity().getFilesDir().getAbsolutePath(), displayName);
+                    FileUriUtils.copyUriToInternalStorage(getActivity(),uri,dataBaseFile);
+                    Toast.makeText(getActivity(),"导入成功!",Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(getActivity(),"出错啦~"+e.getMessage(),Toast.LENGTH_SHORT).show();
+                }
+                return;
+
+            }
+
+            if (requestCode == READ_DATA_KEY_REQUEST_CODE && resultCode == Activity.RESULT_OK &&data.getData()!=null) {
+                try {
+                    Uri uri = data.getData();
+                    File dataBaseFile= null;
+                    String displayName = "client.key";
+                    dataBaseFile=new File(getActivity().getFilesDir().getAbsolutePath(), displayName);
+                    FileUriUtils.copyUriToInternalStorage(getActivity(),uri,dataBaseFile);
+                    Toast.makeText(getActivity(),"导入成功!",Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(getActivity(),"出错啦~"+e.getMessage(),Toast.LENGTH_SHORT).show();
+                }
+                return;
+
+            }
+
         }
 
 
